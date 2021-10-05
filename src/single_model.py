@@ -87,14 +87,16 @@ class PersonalAttributeModel(object):
         input: raw data 
         output: prediction
         """
-        print(self.knn.predict(inputdata))
+        lis = [list(map(int, inputdata.split(',')))]
+        print(self.knn.predict(lis))
 
    
 
 shishu_model = PersonalAttributeModel('./src/depressed_dataset.csv')
 shishu_model.train()
 # test_case [sex,Age,Married,education_level,total_members,living_expenses,other_expenses,incoming_salary,incoming_own_farm,incoming_business,incoming_no_business]
-test_case = [[1,32, 1, 8, 7, 15334717,52370258, 0, 1, 0, 1]]
-test_case1 = [[1,26, 1, 8, 5,33365355,13789233, 0, 0, 0, 0]]
+# test_case = [[1,32, 1, 8, 7, 15334717,52370258, 0, 1, 0, 1]]
+test_case = '1,32, 1, 8, 7, 15334717,52370258, 0, 1, 0, 1'
+# test_case1 = [[1,26, 1, 8, 5,33365355,13789233, 0, 0, 0, 0]]
 shishu_model.process_one(test_case)
-shishu_model.process_one(test_case1)
+# shishu_model.process_one(test_case1)
