@@ -31,7 +31,7 @@ class PersonalAttributeModel(object):
     def __init__(self, data_path):
         self.model = None
         self.df = pd.read_csv(data_path)
-        self.dfDrop = self.df.drop(['no_lasting_investmen', 'Survey_id', 'Ville_id', 'gained_asset', 'durable_asset', 'save_asset', 'farm_expenses', 'labor_primary', 'Number_children','lasting_investment','incoming_agricultural'], axis=1)
+        self.dfDrop = self.df.drop(['no_lasting_investmen', 'Survey_id', 'Ville_id', 'gained_asset', 'durable_asset', 'save_asset', 'farm_expenses', 'labor_primary', 'Number_children','lasting_investment','incoming_agricultural','incoming_own_farm' , 'incoming_business' , 'incoming_no_business'], axis=1)
         X = self.dfDrop.iloc[:, :-1].values
         y = self.dfDrop.iloc[:, -1].values
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size = 0.2)
@@ -105,15 +105,12 @@ total_members: Household size
 living_expenses: year
 other_expenses: year
 incoming_salary:[0: no incoming salary] [1: have incoming salary]
-incoming_own_farm:[0: no incoming farm] [1: have incoming farm]
-incoming_business:[0: no incoming business] [1: have incoming business]
-incoming_no_business:[0: no incoming flow business] [1: have incoming flow business]
 
 output:
 [ Zero: No depressed] or [One: depressed]
 '''
 # test_case
-test_case = '1,32, 1, 8, 7, 15334717,52370258, 0, 1, 0, 1'
-test_case1 = '1,26, 1, 8, 5,33365355,13789233, 0, 0, 0, 0'
+test_case = '1,32, 1, 8, 7, 15334717,52370258, 0'
+test_case1 = '1,26, 1, 8, 5,33365355,13789233, 0'
 shishu_model.process_one(test_case)
 shishu_model.process_one(test_case1)
