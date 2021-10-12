@@ -1,60 +1,60 @@
 import pandas as pd
 from pandas import Series,DataFrame
-
-import numpy as np
-import matplotlib.pyplot as plt
-import missingno as missing
-import seaborn as sns
-import random
-from sklearn import linear_model
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import learning_curve, validation_curve
 from sklearn.metrics import classification_report, confusion_matrix
-from sklearn.model_selection import GridSearchCV
-from sklearn import metrics
-from sklearn.metrics import make_scorer, accuracy_score
-from sklearn.metrics import roc_curve, roc_auc_score ,auc, plot_roc_curve
-from sklearn import svm
-import sklearn.metrics
-from sklearn.neural_network import MLPClassifier
-from sklearn.preprocessing import OneHotEncoder
-
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import cross_validate
-
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+import numpy as np
+import xgboost as xgb
 
 class PersonalAttributeModel(object):
-    def __init__(self, data_path):
-        self.model = None
-        self.df = pd.read_csv(data_path)
-        self.dfDrop = self.df.drop(['no_lasting_investmen', 'Survey_id', 'Ville_id', 'gained_asset', 'durable_asset', 'save_asset', 'farm_expenses', 'labor_primary', 'Number_children','lasting_investment','incoming_agricultural','incoming_own_farm' , 'incoming_business' , 'incoming_no_business'], axis=1)
-        X = self.dfDrop.iloc[:, :-1].values
-        y = self.dfDrop.iloc[:, -1].values
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size = 0.2)
-    
+    def __init__(self):
+        self.xgb = None
+        
     def feature_extract():
         """
         extract feature from raw data
         """
         pass
 
-    def train(self):
-        # self.rf = RandomForestClassifier(n_estimators = 9,
-        #                             max_depth=3,
-        #                             min_samples_split=9,
-        #                             min_samples_leaf=5
-        #                            )
-        # self.rf.fit(self.X_train, self.y_train)
-        self.knn=KNeighborsClassifier(n_neighbors=3)
-        self.knn.fit(self.X_train, self.y_train)
+    def train(self, data_path='./src/depressed_dataset.csv'):
+        self.df = pd.read_csv(data_path)
+        self.dfDrop = self.df.drop(['no_lasting_investmen', 'Survey_id', 'Ville_id', 'gained_asset', 'durable_asset', 'save_asset', 'farm_expenses', 'labor_primary', 'Number_children','lasting_investment','incoming_agricultural','incoming_own_farm' , 'incoming_business' , 'incoming_no_business'], axis=1)
+        X = self.dfDrop.iloc[:, :-1].values
+        y = self.dfDrop.iloc[:, -1].values
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size = 0.2)
+        dtrain = xgb.DMatrix(self.X_train, label=self.y_train)
+        dtest = xgb.DMatrix(self.X_test, label= self.y_test)
+        params = {
+            'booster': 'gbtree',
+            'objective': 'binary:logistic',
+            'eval_metric': 'auc',
+            'gamma': 0.1,
+            'max_depth': 8,
+            'alpha': 0,
+            'lambda': 0,
+            'subsample': 0.7,
+            'colsample_bytree': 0.5,
+            'min_child_weight': 3,
+            'eta': 0.03,
+            'nthread': -1,
+            'seed': 2019,
+        }
+        num_boost_round=500
+        self.xgb = xgb.train(params, dtrain, num_boost_round, verbose_eval=200)
+
 
     def test(self):
-        # self.rf_pred = self.rf.predict(self.X_test)
-        pass
+        dtest = xgb.DMatrix(self.X_test, label= self.y_test)
+        preds = self.xgb.predict(dtest)
+
+        preds = np.array(preds)
+        preds[preds>0.5]=1
+        preds[preds<=0.5]=0
+        # print(preds)
+        print(confusion_matrix(self.y_test, preds))
+        print (classification_report(self.y_test, preds))
+        print("Accuracy:", accuracy_score(self.y_test, preds))
+        
 
     def save():
         """
@@ -62,11 +62,12 @@ class PersonalAttributeModel(object):
         """
         pass
 
-    def load():
+    def load(self):
         """
         load model
         """
-        pass
+        self.train()
+        
 
     def pred(self, feature):
         """
@@ -87,14 +88,15 @@ class PersonalAttributeModel(object):
         input: raw data 
         output: prediction
         """
-        lis = [list(map(int, inputdata.split(',')))]
-        print(self.knn.predict_proba(lis))
+        lis = np.array([list(map(int, inputdata.split(',')))])
+        test_case = xgb.DMatrix(lis)
+        return {'depression':self.xgb.predict(test_case)[0],'nondepression':1-self.xgb.predict(test_case)[0]}
 
    
 
-shishu_model = PersonalAttributeModel('./src/depressed_dataset.csv')
-shishu_model.train()
 
+attribute_model = PersonalAttributeModel()
+attribute_model.load()
 '''
 input:
 sex: [0: man] [1: woman]
@@ -112,5 +114,5 @@ output:
 # test_case
 test_case = '1,32, 1, 8, 7, 15334717,52370258, 0'
 test_case1 = '1,26, 1, 8, 5,33365355,13789233, 0'
-shishu_model.process_one(test_case)
-shishu_model.process_one(test_case1)
+print(attribute_model.process_one(test_case))
+print(attribute_model.process_one(test_case1))
