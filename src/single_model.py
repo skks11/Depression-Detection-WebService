@@ -85,15 +85,8 @@ class TextModel(object):
         self.sgd.fit(self.x_train, self.y_train)
         y_pred = self.sgd.predict(self.x_test)
 
-        # print('accuracy %s' % accuracy_score(y_pred, self.y_test))
-        # return {'depression': self.sgd. 'nondepression': 1 - self.xgb.predict(test_case)[0]}
-        # print("Precision score: {}".format(precision_score(y_true, y_pred)))
-        depression = precision_score(self.y_train, y_pred, labels=1, pos_label=1, average=None)
-        print(y_pred)
-
-
-        #print(classification_report(self.y_test, y_pred, digits=5))
-        # print(self.x_train)
+        print('accuracy %s' % accuracy_score(y_pred, self.y_test))
+        print(classification_report(self.y_test, y_pred, digits=5))
 
 
 text_model = TextModel()
