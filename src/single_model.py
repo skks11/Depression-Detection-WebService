@@ -4,7 +4,7 @@ import pandas as pd
 import os
 import re
 from sentence_transformers import SentenceTransformer
-
+import xgb as xgb
 import nltk
 from nltk.corpus import stopwords
 
@@ -12,57 +12,54 @@ import preprocessor as p
 
 from sklearn.model_selection import train_test_split
 
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score, classification_report, precision_score
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.linear_model import SGDClassifier
 
 
 class TextModel(object):
-    def __init__(self, data_path, clean_path):
+    def __init__(self):
         self.model = None
-        encoding = 'ISO-8859-1'
-        col_names = ['id', 'content', 'label']
-        self.dataset = pd.read_csv(os.path.join(data_path), encoding=encoding, names=col_names)
-
-        self.contractions = pd.read_json(os.path.join(clean_path), typ='series')
-        self.contractions = self.contractions.to_dict()
-        self.c_re = re.compile('(%s)' % '|'.join(self.contractions.keys()))
-        self.BAD_SYMBOLS_RE = re.compile('[^0-9a-z #+_]')
         self.X = []  # X-- clean dataset
-
         self.sgd = SGDClassifier(loss='hinge', penalty='l2', alpha=1e-3, random_state=42, max_iter=5,
                                  tol=None)
 
-    def transformers(self, text):
+    def transformers(self, text, detail):
         self.model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
-        # self.dataset["content"] = [float(str(i).replace(",", "")) for i in self.dataset["content"]]
-        text = self.dataset['content'].tolist()
+        text = detail['content'].tolist()
         des_embeddings = []
         for i, des in enumerate(text):
             des_embeddings.append(self.model.encode(des))
         # des_embeddings = des_embeddings.dropna()
         # print(des_embeddings)
+        self.sgd = SGDClassifier(loss='hinge', penalty='l2', alpha=1e-3, random_state=42, max_iter=5,
+                                 tol=None)
         return des_embeddings
 
-    def expandContractions(self, text):
+    def expandContractions(self, clean_path, text):
+        contractions = pd.read_json(os.path.join(clean_path), typ='series')
+        contractions = contractions.to_dict()
+        c_re = re.compile('(%s)' % '|'.join(contractions.keys()))
+
         def replace(match):
             return contractions[match.group(0)]
 
-        return self.c_re.sub(replace, text)
+        return c_re.sub(replace, text)
 
-    def clean(self):
+    def clean(self, info, clean_path):
+        BAD_SYMBOLS_RE = re.compile('[^0-9a-z #+_]')
         cleaned_dataset = []
-        texts = [text for text in self.dataset['content']]
+        texts = [text for text in info]
         nltk.download('stopwords')
         nltk.download('punkt')
         for text in texts:
             text = str(text)
             text = text.lower()
-            text = self.BAD_SYMBOLS_RE.sub(' ', text)
+            text = BAD_SYMBOLS_RE.sub(' ', text)
             text = p.clean(text)
             # expand contraction
-            text = self.expandContractions(text)
+            text = self.expandContractions(clean_path, text)
             # remove punctuation
             text = ' '.join(re.sub("([^0-9A-Za-z \t])", " ", text).split())
             # stop words
@@ -76,21 +73,31 @@ class TextModel(object):
 
         # return cleaned_dataset
 
-    def train(self):
-        self.X = self.transformers(self.X)
-        self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.X, self.dataset.label,
+    def process_one(self, data_path, clean_path):
+        encoding = 'ISO-8859-1'
+        col_names = ['id', 'content', 'label']
+        dataset = pd.read_csv(os.path.join(data_path), encoding=encoding, names=col_names)
+        self.X = self.clean(dataset['content'], clean_path)
+        self.X = self.transformers(self.X, dataset)
+
+        self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.X, dataset.label,
                                                                                 test_size=0.3, random_state=42)
-        # print(self.x_train)
         self.sgd.fit(self.x_train, self.y_train)
-
-    def pred(self):
         y_pred = self.sgd.predict(self.x_test)
-        print('accuracy %s' % accuracy_score(y_pred, self.y_test))
-        print(classification_report(self.y_test, y_pred, digits=5))
+
+        # print('accuracy %s' % accuracy_score(y_pred, self.y_test))
+        # return {'depression': self.sgd. 'nondepression': 1 - self.xgb.predict(test_case)[0]}
+        # print("Precision score: {}".format(precision_score(y_true, y_pred)))
+        depression = precision_score(self.y_train, y_pred, labels=1, pos_label=1, average=None)
+        print(y_pred)
 
 
-text_model = TextModel('./input/final.csv', './input/contractions.json')
-text_model.clean()
-text_model.train()
-text_model.train()
-text_model.pred()
+        #print(classification_report(self.y_test, y_pred, digits=5))
+        # print(self.x_train)
+
+
+text_model = TextModel()
+# text_model.clean()
+# text_model.train()
+# text_model.pred()
+text_model.process_one('./input/final.csv', './input/contractions.json')
