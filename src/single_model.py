@@ -5,6 +5,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.metrics import accuracy_score
 import numpy as np
 import xgboost as xgb
+import pickle
 
 class PersonalAttributeModel(object):
     def __init__(self):
@@ -56,17 +57,18 @@ class PersonalAttributeModel(object):
         print("Accuracy:", accuracy_score(self.y_test, preds))
         
 
-    def save():
+    def save(self):
         """
         save model
         """
-        pass
+        pickle.dump(self.xgb, open("xgb.dat", "wb"))
 
     def load(self):
         """
         load model
         """
-        self.train()
+        self.xgb = pickle.load(open("xgb.dat", 'rb'), encoding='bytes')
+        # self.train()
         
 
     def pred(self, feature):
@@ -96,6 +98,9 @@ class PersonalAttributeModel(object):
 
 
 attribute_model = PersonalAttributeModel()
+attribute_model.train()
+attribute_model.test()
+attribute_model.save()
 attribute_model.load()
 '''
 input:
