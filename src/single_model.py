@@ -20,8 +20,11 @@ class PersonalAttributeModel(object):
     def train(self, data_path='./src/depressed_dataset.csv'):
         self.df = pd.read_csv(data_path)
         self.dfDrop = self.df.drop(['no_lasting_investmen', 'Survey_id', 'Ville_id', 'gained_asset', 'durable_asset', 'save_asset', 'farm_expenses', 'labor_primary', 'Number_children','lasting_investment','incoming_agricultural','incoming_own_farm' , 'incoming_business' , 'incoming_no_business'], axis=1)
-        X = self.dfDrop.iloc[:, :-1].values
-        y = self.dfDrop.iloc[:, -1].values
+        x_1 = self.dfDrop[self.dfDrop.depressed ==1]
+        x_0 = self.dfDrop[self.dfDrop.depressed ==0]
+        new_df = pd.concat([x_1, x_1, x_1, x_1 , x_1, x_0])
+        X = new_df.iloc[:, :-1].values
+        y = new_df.iloc[:, -1].values
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size = 0.2)
         dtrain = xgb.DMatrix(self.X_train, label=self.y_train)
         dtest = xgb.DMatrix(self.X_test, label= self.y_test)
