@@ -24,6 +24,7 @@ requirements:
 ## Install:
 * first you need a python3.8 and pip3
 * pip install -r requirements.txt
+* download model checkpoints from https://www.dropbox.com/s/gy3h3bnidz4cju7/models.zip?dl=0, unzip model.zip and place it at the default dir.
 
 
 ## Usage:
