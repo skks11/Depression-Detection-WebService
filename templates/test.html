@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <title>Depression-Detection</title>
+
+  <link href="../static/css/show.min.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.min.css" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <link href="../static/css/show.css" rel="stylesheet">
+  <link href="../static/css/bootstrap-select.min.css" rel="stylesheet" type="text/css">
+  <link href="../static/css/fileinput.css" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-primary">
+
+  <div class="container">
+
+    <!-- Outer Row -->
+    <div class="row justify-content-center">
+
+      <div class="col-xl-10 col-lg-12 col-md-9">
+
+        <div class="card o-hidden border-0 shadow-lg my-5">
+          <div class="card-body p-0">
+                  <div class="text-center">
+                      <h1 class="h1 text-gray-900 mt-5 mb-0">welcome to depression detection</h1>
+                  </div>
+            <!-- Nested Row within Card Body -->
+            <div class="row">
+              <div class="col-lg-6">
+                 <div class="p-5">
+                  <div class="text-center">
+                    <h1 class="h4 text-gray-900 mb-4">please input</h1>
+                  </div>
+                  <form class="user" id="Inputform">
+
+                    <div>
+                        <select class="selectpicker mb-3" aria-label="sex">
+                            <option selected>sex</option>
+                            <option value="0">man</option>
+                            <option value="1">woman</option>
+                            </select>
+                    </div>
+                    <div>
+                        <select class="selectpicker mb-3" aria-label="married">
+                            <option selected>married status</option>
+                            <option value="0">no</option>
+                            <option value="1">yes</option>
+                            </select>
+                    </div>
+
+                    <div>
+                        <select class="selectpicker mb-3" aria-label="salary">
+                            <option selected>incoming salary status</option>
+                            <option value="0">no</option>
+                            <option value="1">yes</option>
+                            </select>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" name="age" class="form-control form-control-user" id="exampleInputAge" placeholder="Age: [1-100].">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="education" class="form-control form-control-user" id="exampleInputEducation" placeholder="education_level: Years of education completed.">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="total_member" class="form-control form-control-user" id="exampleInputMember" placeholder="total_members: Household size.">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="living_expenses" class="form-control form-control-user" id="exampleInputExpenses" placeholder="living_expenses: year.">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="other_expenses" class="form-control form-control-user" id="exampleInputOtherExpenses" placeholder="other_expenses: year.">
+                    </div>
+                      <div class="text-left">
+                      <h1 class="h6 text-gray-900 mb-2">How are you feeling today?</h1>
+                      </div>
+                    <div class="form-group" >
+                        <input type="text" name="text" class="form-control form-control-user" id="exampleInputText1" placeholder="write here">
+                    </div>
+                      <div class="text-left">
+                      <h1 class="h6 text-gray-900 mb-2">What is the one thing that affects your mood recently?</h1>
+                      </div>
+                    <div class="form-group" >
+                        <input type="text" name="text" class="form-control form-control-user" id="exampleInputText2" placeholder="write here">
+                    </div>
+                  </form>
+                    <hr>
+                  </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="p-5">
+                  <div class="text-center">
+                    <h1 class="h4 text-gray-900 mb-4">please upload video & audio</h1>
+                  </div>
+                  <form class="user mb-4" id="Fileform">
+                    <div>
+                        <input id="input-b3" name="input-b3[]" type="file" class="file" multiple data-show-upload="false" data-show-caption="true" data-msg-placeholder="Select {files} for upload...">
+                    </div>
+                  </form>
+                  <div style="text-align:center" >
+                    <button type="button" class="btn btn-primary" style="width:348px" id="btnSubmit">
+                      submit
+                    </button>
+                    </div>
+                    <hr>
+                    <div>
+                        <div class="text-left">
+                        <h1 class="h6 text-gray-900 mb-2">outcome:</h1>
+                        </div>
+                        <div class="form-group">
+                            <input  type="text" style="height:250px!important" name="outcome" readonly="readonly" class="form-control form-control-user">
+                        </div>
+
+                    </div>
+                    <hr>
+                  <div class="text-center">
+                    <a class="small" href="https://github.com/skks11/Depression-Detection-WebService">Depression-Detection</a>
+                  </div>
+
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <script src="../static/js/jquery.min.js"></script>
+  <script src="../static/js/bootstrap.bundle.min.js"></script>
+  <script src="../static/js/jquery.easing.min.js"></script>
+  <script src="../static/js/sb-admin-2.min.js"></script>
+  <script src="../static/js/bootstrap-select.min.js"></script>
+  <script src="../static/js/sortable.js"></script>
+  <script src="../static/js/fileinput.js"></script>
+  <script src="../static/js/piexif.js"></script>
+
+  <script>
+      window.onload = function(){
+        var data1={}
+        data1=1
+        var oForm = document.getElementById('userform');
+        var oUser = document.getElementById('exampleInputName');
+        var oPswd = document.getElementById('exampleInputPassword');
+        var oRemember = document.getElementById('rememberMe');
+        }
+
+      $("#btnSubmit").click(function (){
+        alert("hello");
+      $.ajax({
+        async: true,   		/*是否为异步请求*/
+		cache: false,  		/*是否缓存结果*/
+		type: "POST", 		/*请求方式*/
+        dataType: "json", 	/*服务器返回的数据是什么类型，注意是jsonp，回调函数callback //dataType: "text", 	服务器返回的数据是什么类型，注意是jsonp，回调函数callback*/
+		url: "/data",
+		data: $("#Inputform").serialize(),
+		success: function (data) {
+          if(data.code == "200")
+          {
+            alert(data.msg);
+            /*//return outcome to #outcome
+            //window.location.href="index1.0.html"; */
+          }
+          else
+          {
+            alert(data.msg);
+          }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+          alert("error");
+          /*// window.location.href="login.html"
+					// 状态码 */
+					console.log("status:" + XMLHttpRequest.status + "\n");
+					/* 状态 */
+					console.log("readyState:" + XMLHttpRequest.readyState + "\n");
+					/* 错误信息*/
+					console.log("textStatus:" + textStatus + "\n");
+        }
+			});
+    });
+  </script>
+
+</body>
+</html>
